@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private CharacterController controller;
+    [SerializeField] private AudioSource pickSource;
 
     private const float defaultVelocity = -0.45f;
     //private const float defaultSpeed = 6f;
@@ -17,12 +18,8 @@ public class PlayerController : MonoBehaviour
     private float jumpForce = 0.4f;
     private Vector3 glideVelocity;
     private bool isGrounded = true;
+    private int tableCounter = 0;
     //private bool isGliding = false;
-
-    void Start()
-    {
-        
-    }
 
     void Update()
     {
@@ -69,8 +66,27 @@ public class PlayerController : MonoBehaviour
         glideVelocity.y = -jumpForce * -pGravity;
     }
 
+    void PickTable(GameObject table)
+    {
+        tableCounter++;
+        StartCoroutine(DeleteTable(table));
+        table.GetComponent<Animator>().SetBool("pick", true);
+        pickSource.Play();
+    }
+
+    IEnumerator DeleteTable(GameObject table)
+    {
+        yield return new WaitForSeconds(0.25f);
+        Destroy(table);
+    }
+
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if(hit.gameObject.tag == "Obstacle") Debug.Log("GG");
+        if (hit.gameObject.tag == "Obstacle") Debug.Log("GG");
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.tag == "Pickup") PickTable(collider.gameObject);
     }
 }
