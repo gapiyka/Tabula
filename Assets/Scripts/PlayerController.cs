@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private UIController uiController;
 
     private const float defaultVelocity = -0.45f;
-    private const float defaultAngle = 17.5f;
+    private const float defaultAngle = 18f;
     private const float defaultSleepDelay = 0.25f;
     private const float levelBorder = -5f;
 
@@ -26,10 +26,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        uiController.playerDist = transform.position.z;
+        CheckBorders();
         CalculateMovements();
         CalculateGliding();
-        CheckBorders();
-        uiController.playerDist = transform.position.z;
     }
 
     void CalculateMovements()
@@ -50,16 +50,23 @@ public class PlayerController : MonoBehaviour
 
     void CalculateGliding()
     {
-        isGliding = (Input.GetMouseButton(0) && tableStack.Count > 0) ? true : false;
+        Touch touch = new Touch();
+        if (Input.touchCount > 0)
+        {
+            touch = Input.GetTouch(0);
+            isGliding = (touch.phase != TouchPhase.Ended && tableStack.Count > 0) ? true : false;
+        }
+        else isGliding = false;
+        
         float xRotationAngle = 0;
         if (isGliding)
         {
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (touch.position.y > touch.rawPosition.y)
             {
                 xRotationAngle = -defaultAngle;
                 uiController.MoveBarUp();
             }
-            else if (Input.GetKey(KeyCode.DownArrow))
+            else if (touch.position.y < touch.rawPosition.y)
             {
                 xRotationAngle = defaultAngle;
                 uiController.MoveBarDown();
