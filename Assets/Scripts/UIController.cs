@@ -6,6 +6,7 @@ public class UIController : MonoBehaviour
 {
     [SerializeField] private Slider slider;
     [SerializeField] private GameObject glidingBar;
+	[SerializeField] private GameObject tutorial;
     [SerializeField] private Text looseText;
     [SerializeField] private Text checkpointText;
 
@@ -19,6 +20,7 @@ public class UIController : MonoBehaviour
     void Start()
     {
         barStartPos = glidingBar.transform.position;
+		StartCoroutine(SwitchOffTutorial());
     }
 
     void Update()
@@ -60,4 +62,10 @@ public class UIController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         checkpointText.gameObject.SetActive(false);
     }
+	
+	IEnumerator SwitchOffTutorial()
+	{
+		yield return new WaitForSeconds(8f);
+		Destroy(tutorial);
+	}
 }
